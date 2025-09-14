@@ -1,3 +1,31 @@
+//! Easily spawn windows as independent UI roots. Ideal for debug widgets!
+//!
+//! ## Usage
+//!
+//! ```
+//! app.add_plugins(WindowAsUiRootPlugin);
+//!
+//! commands.spawn((
+//!   WindowAsUiRoot,
+//!   BackgroundColor(Color::WHITE),
+//!   children![(
+//!     Text::new("Hello World!"),
+//!     TextColor(Color::BLACK),
+//!   )],
+//! ));
+//! ```
+//!
+//! Insert the [`WindowAsUiRoot`] component on an entity and this plugin will:
+//!
+//! - Insert `Node` and `Window` components if they don't already exist.
+//! - Spawn a `Camera2d` and connect it to the new root node and window.
+//! - Automatically resize the window to match the root node's layout size (if it is auto or fixed).
+//!
+//! ## Tips
+//! - Use the [`CloseWith`] relation to automatically close nested windows.
+//! - Set `WindowPlugin.exit_condition` to `ExitCondition::OnPrimaryClosed` to prevent popups from outliving the main window.
+//! - Insert `Node { width: percent(100), height: percent(100), ..default() }` on the UI root to make it resizable by the user.
+
 use bevy_app::{App, Plugin, Update};
 use bevy_camera::{Camera, Camera2d, RenderTarget};
 use bevy_ecs::{
@@ -11,6 +39,7 @@ use bevy_ecs::{entity::Entity, query::Has, schedule::IntoScheduleConfigs};
 use bevy_ui::{ComputedNode, Node, UiTargetCamera, Val};
 use bevy_window::{Window, WindowRef};
 
+/// This plugin handles creating and resizing windows, add it to use this library.
 pub struct WindowAsUiRootPlugin;
 
 impl Plugin for WindowAsUiRootPlugin {
@@ -20,14 +49,23 @@ impl Plugin for WindowAsUiRootPlugin {
     }
 }
 
+/// Add this relation from sub-windows to their parents to automatically close them.
 #[derive(Component, Clone, Copy)]
 #[relationship(relationship_target = AlsoClose)]
 pub struct CloseWith(pub Entity);
 
+#[doc(hidden)]
 #[derive(Component, Clone)]
 #[relationship_target(relationship = CloseWith, linked_spawn)]
 pub struct AlsoClose(Vec<Entity>);
 
+/// Use this component to spawn windows as independent UI roots.
+///
+/// Inserting it on an entity will:
+///
+/// - Insert `Node` and `Window` components if they don't already exist.
+/// - Spawn a `Camera2d` and connect it to the new root node and window.
+/// - Automatically resize the window to match the root node's layout size (if it is auto or fixed).
 #[derive(Component, Clone, Copy)]
 #[require(Window, Node)]
 pub struct WindowAsUiRoot;

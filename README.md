@@ -3,9 +3,7 @@
 ![GitHub License](https://img.shields.io/github/license/Gingeh/bevy_window_as_ui_root)
 
 Easily spawn windows as independent UI roots. Ideal for debug widgets!
-
-![demo](assets/demo.png)
-
+![](assets/demo.png)
 ## Usage
 
 ```rust
@@ -24,7 +22,7 @@ commands.spawn((
 Insert the `WindowAsUiRoot` component on an entity and this plugin will:
 
 - Insert `Node` and `Window` components if they don't already exist.
-- Spawn a `Camera2D` and connect it to the new root node and window.
+- Spawn a `Camera2d` and connect it to the new root node and window.
 - Automatically resize the window to match the root node's layout size (if it is auto or fixed).
 
 ## Tips
