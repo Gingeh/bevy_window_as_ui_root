@@ -1,7 +1,10 @@
 [package]
 name = "bevy_window_as_ui_root"
+description = "Small bevy utility for spawning UI roots as independent windows."
 version = "0.1.0"
 edition = "2024"
+license-file = "MIT OR Apache-2.0"
+repository = "https://github.com/Gingeh/bevy_window_as_ui_root/"
 
 [dependencies]
 bevy_app = { version = "0.17.0-rc.1", default-features = false }
