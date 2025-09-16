@@ -30,10 +30,10 @@ use bevy_app::{App, Plugin, Update};
 use bevy_camera::{Camera, Camera2d, RenderTarget};
 use bevy_ecs::{
     component::Component,
-    lifecycle,
-    observer::On,
+    lifecycle::HookContext,
     query::{Changed, With, Without},
     system::{Commands, Query},
+    world::DeferredWorld,
 };
 use bevy_ecs::{entity::Entity, query::Has, schedule::IntoScheduleConfigs};
 use bevy_ui::{ComputedNode, Node, UiTargetCamera, Val};
@@ -44,8 +44,7 @@ pub struct WindowAsUiRootPlugin;
 
 impl Plugin for WindowAsUiRootPlugin {
     fn build(&self, app: &mut App) {
-        app.add_observer(creation_observer)
-            .add_systems(Update, (update_resizable, update_size).chain());
+        app.add_systems(Update, (update_resizable, update_size).chain());
     }
 }
 
@@ -68,16 +67,17 @@ pub struct AlsoClose(Vec<Entity>);
 /// - Automatically resize the window to match the root node's layout size (if it is auto or fixed).
 #[derive(Component, Clone, Copy, Default)]
 #[require(Window, Node, Camera2d, Camera)]
+#[component(on_add = add_hook)]
 pub struct WindowAsUiRoot;
 
-fn creation_observer(event: On<lifecycle::Add, WindowAsUiRoot>, mut commands: Commands) {
-    commands.get_entity(event.entity).unwrap().insert((
-        Camera {
-            target: RenderTarget::Window(WindowRef::Entity(event.entity)),
-            ..Default::default()
-        },
-        UiTargetCamera(event.entity),
-    ));
+fn add_hook(mut world: DeferredWorld, HookContext { entity, .. }: HookContext) {
+    let mut camera = world.get_mut::<Camera>(entity).unwrap();
+    camera.target = RenderTarget::Window(WindowRef::Entity(entity));
+    world
+        .commands()
+        .get_entity(entity)
+        .unwrap()
+        .insert(UiTargetCamera(entity));
 }
 
 #[derive(Component)]
