@@ -17,8 +17,8 @@
 //!
 //! Insert the [`WindowAsUiRoot`] component on an entity and this plugin will:
 //!
-//! - Insert `Node` and `Window` components if they don't already exist.
-//! - Spawn a `Camera2d` and connect it to the new root node and window.
+//! - Insert `Node`, `Window`, and `Camera` components if they don't already exist.
+//! - Connect the camera to the root node and window.
 //! - Automatically resize the window to match the root node's layout size (if it is auto or fixed).
 //!
 //! ## Tips
@@ -63,31 +63,21 @@ pub struct AlsoClose(Vec<Entity>);
 ///
 /// Inserting it on an entity will:
 ///
-/// - Insert `Node` and `Window` components if they don't already exist.
-/// - Spawn a `Camera2d` and connect it to the new root node and window.
+/// - Insert `Node`, `Window`, and `Camera` components if they don't already exist.
+/// - Connect the camera to the root node and window.
 /// - Automatically resize the window to match the root node's layout size (if it is auto or fixed).
-#[derive(Component, Clone, Copy)]
-#[require(Window, Node)]
+#[derive(Component, Clone, Copy, Default)]
+#[require(Window, Node, Camera2d, Camera)]
 pub struct WindowAsUiRoot;
 
 fn creation_observer(event: On<lifecycle::Add, WindowAsUiRoot>, mut commands: Commands) {
-    let entity = event.entity;
-
-    let camera = commands
-        .spawn((
-            Camera2d,
-            Camera {
-                target: RenderTarget::Window(WindowRef::Entity(entity)),
-                ..Default::default()
-            },
-        ))
-        .id();
-
-    commands
-        .get_entity(entity)
-        .unwrap()
-        .insert(UiTargetCamera(camera))
-        .add_child(camera);
+    commands.get_entity(event.entity).unwrap().insert((
+        Camera {
+            target: RenderTarget::Window(WindowRef::Entity(event.entity)),
+            ..Default::default()
+        },
+        UiTargetCamera(event.entity),
+    ));
 }
 
 #[derive(Component)]

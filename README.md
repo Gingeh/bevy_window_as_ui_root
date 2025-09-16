@@ -21,8 +21,8 @@ commands.spawn((
 
 Insert the `WindowAsUiRoot` component on an entity and this plugin will:
 
-- Insert `Node` and `Window` components if they don't already exist.
-- Spawn a `Camera2d` and connect it to the new root node and window.
+- Insert `Node`, `Window`, and `Camera` components if they don't already exist.
+- Connect the camera to the root node and window.
 - Automatically resize the window to match the root node's layout size (if it is auto or fixed).
 
 ## Tips
