@@ -6,7 +6,7 @@ use bevy::{
         theme::{ThemeBackgroundColor, ThemedText, UiTheme},
     },
     prelude::*,
-    ui_widgets::{Activate, Callback},
+    ui_widgets::{Activate, observe},
     window::{ExitCondition, PrimaryWindow},
 };
 use bevy_window_as_ui_root::{CloseWith, WindowAsUiRoot, WindowAsUiRootPlugin};
@@ -42,10 +42,6 @@ fn update_counter_span(mut span: Single<&mut TextSpan, With<CounterSpan>>, count
 }
 
 fn setup(mut commands: Commands, primary_window: Single<Entity, With<PrimaryWindow>>) {
-    let on_click_system = commands.register_system(|_: In<Activate>, mut count: ResMut<Count>| {
-        **count += 1;
-    });
-
     let button_window = commands
         .spawn((
             WindowAsUiRoot,
@@ -54,13 +50,15 @@ fn setup(mut commands: Commands, primary_window: Single<Entity, With<PrimaryWind
                 padding: px(8).all(),
                 ..default()
             },
-            children![button(
-                ButtonProps {
-                    on_click: Callback::System(on_click_system),
-                    ..default()
-                },
-                (),
-                Spawn((Text::new("Increment"), ThemedText))
+            children![(
+                button(
+                    ButtonProps::default(),
+                    (),
+                    Spawn((Text::new("Increment"), ThemedText))
+                ),
+                observe(|_: On<Activate>, mut count: ResMut<Count>| {
+                    **count += 1;
+                })
             )],
         ))
         .id();

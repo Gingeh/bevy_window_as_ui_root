@@ -6,7 +6,7 @@ use bevy::{
         theme::{ThemeBackgroundColor, ThemedText, UiTheme},
     },
     prelude::*,
-    ui_widgets::{Activate, Callback},
+    ui_widgets::{Activate, observe},
     window::PrimaryWindow,
 };
 use bevy_window_as_ui_root::{CloseWith, WindowAsUiRoot, WindowAsUiRootPlugin};
@@ -19,7 +19,7 @@ fn main() -> AppExit {
         .run()
 }
 
-fn new_popup(commands: &mut Commands) -> impl Bundle {
+fn new_popup() -> impl Bundle {
     (
         WindowAsUiRoot,
         ThemeBackgroundColor(feathers::tokens::WINDOW_BG),
@@ -27,26 +27,25 @@ fn new_popup(commands: &mut Commands) -> impl Bundle {
             padding: px(8).all(),
             ..default()
         },
-        children![button(
-            ButtonProps {
-                on_click: Callback::System(commands.register_system(
-                    |In(Activate(this)), mut commands: Commands| {
-                        let popup = new_popup(&mut commands);
-                        commands
-                            .get_entity(this)
-                            .unwrap()
-                            .with_related::<CloseWith>(popup);
-                    },
-                )),
-                ..default()
-            },
-            (),
-            Spawn((Text::new("Open a Popup"), ThemedText)),
+        children![(
+            button(
+                ButtonProps::default(),
+                (),
+                Spawn((Text::new("Open a Popup"), ThemedText)),
+            ),
+            observe(|activate: On<Activate>, mut commands: Commands| {
+                let this = activate.entity;
+                let popup = new_popup();
+                commands
+                    .get_entity(this)
+                    .unwrap()
+                    .with_related::<CloseWith>(popup);
+            })
         )],
     )
 }
 
 fn setup(mut commands: Commands, primary_window: Single<Entity, With<PrimaryWindow>>) {
-    let popup = new_popup(&mut commands);
+    let popup = new_popup();
     commands.get_entity(*primary_window).unwrap().insert(popup);
 }

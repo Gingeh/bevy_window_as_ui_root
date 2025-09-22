@@ -31,7 +31,8 @@ Insert the `WindowAsUiRoot` component on an entity and this plugin will:
 - Insert `Node { width: percent(100), height: percent(100), ..default() }` on the UI root to make it resizable by the user.
 
 ## Bevy Version
-The `main` branch currently targets Bevy `0.17.0-rc.1`.
+The `main` branch currently targets Bevy `0.17`.\
+Crate version `0.1.0` targets Bevy `0.17`.
 
 ## License
 
