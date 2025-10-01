@@ -1,9 +1,9 @@
 # bevy_window_as_ui_root
 
 ![Bevy Version](assets/bevy_version_badge.svg)
-![Crates.io Version](https://img.shields.io/crates/v/bevy_window_as_ui_root)
+[![Crates.io Version](https://img.shields.io/crates/v/bevy_window_as_ui_root)](https://crates.io/crates/bevy_window_as_ui_root)
 ![Crates.io License](https://img.shields.io/crates/l/bevy_window_as_ui_root)
-![docs.rs](https://img.shields.io/docsrs/bevy_window_as_ui_root)
+[![docs.rs](https://img.shields.io/docsrs/bevy_window_as_ui_root)](https://docs.rs/bevy_window_as_ui_root/0.1.0)
 
 Easily spawn windows as independent UI roots. Ideal for debug widgets!
 ![](assets/demo.png)
